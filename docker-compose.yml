@@ -1,0 +1,11 @@
+version: "3"
+services:
+  develop:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+     - 4000:80
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    environment:
+      - name=value
