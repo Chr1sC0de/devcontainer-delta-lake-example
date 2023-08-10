@@ -1,8 +1,10 @@
+from typing import Tuple
+from pyspark.sql import SparkSession
 import pathlib as pt
 
 import pandas as pd
 import pytest
-from pyspark.sql import SparkSession
+from testlib.settings import Config
 
 clean_query = """
     delete from
@@ -14,9 +16,10 @@ clean_query = """
 """
 
 
-def test_direct_insert_into_student(spark: SparkSession):
-    spark.sql(clean_query)
-    spark.sql(
+def test_direct_insert_into_student(mock_spark: Config):
+    config = mock_spark
+    config.spark.sql(clean_query)
+    config.spark.sql(
         """
             insert into
                 university.students
@@ -24,7 +27,7 @@ def test_direct_insert_into_student(spark: SparkSession):
                 (100000, "First","Student")
         """
     )
-    pandas_df = spark.sql(
+    pandas_df = config.spark.sql(
         """
         select
             *
@@ -36,7 +39,7 @@ def test_direct_insert_into_student(spark: SparkSession):
             and last_name = 'Student'
         """
     ).toPandas()
-    spark.sql(clean_query)
+    config.spark.sql(clean_query)
     assert all(
         (
             pandas_df

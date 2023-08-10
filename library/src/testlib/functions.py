@@ -4,31 +4,36 @@ from typing import Dict, Tuple
 
 from pyspark.sql import DataFrame, SparkSession
 
-from testlib.settings import config
+from testlib.settings import Config
 
 
-def initialize_tables():
-    from testlib.build import model
-    from testlib.settings import config
+def initialize_tables(config: Config):
+    from testlib.build import get_model
+
+    model = get_model(config)
 
     for query in model.values():
         config.spark.sql(query)
 
 
-def upload_to_raw_university(file_path: pt.Path) -> Dict:
+def upload_to_raw_university(file_path: pt.Path, config: Config) -> Dict:
     assert file_path.exists()
     return config.s3_bucket_raw_university.upload_file(
         file_path.absolute(), f"in/{file_path.name}"
     )
 
 
-def append_raw_csv_file_to_bronze_table(s3_path: str, table_name: str):
+def append_raw_csv_file_to_bronze_table(
+    s3_path: str, table_name: str, config: Config
+):
     config.spark.read.option("dateFormat", "yyyy-MM-dd").csv(
         s3_path, header=True, schema=config.spark.table(table_name).schema
     ).write.mode("append").format("delta").saveAsTable(table_name)
 
 
-def get_active_students(start_date: str, end_date: str) -> DataFrame:
+def get_active_students(
+    start_date: str, end_date: str, config: Config
+) -> DataFrame:
     base_query = """
         select
             S.first_name,
@@ -47,13 +52,6 @@ def get_active_students(start_date: str, end_date: str) -> DataFrame:
     )
 
 
-def mock_endpoint() -> Tuple[str, int, str]:
-    ip_address = "127.0.0.1"
-    port = 5000
-    endpoint_url = f"http://{ip_address}:{port}"
-    return ip_address, port, endpoint_url
-
-
 def mock_environment_variables(master: str = None, metastore: bool = False):
     """Mocked AWS Credentials for moto."""
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
@@ -63,8 +61,8 @@ def mock_environment_variables(master: str = None, metastore: bool = False):
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
     pyspark_submit_args_list = [
         # The following packages are only required if the jars have not been downloaded
-        # "--packages",
-        # "org.apache.hadoop:hadoop-aws:3.3.2,io.delta:delta-core_2.12:2.4.0",
+        "--packages",
+        "org.apache.hadoop:hadoop-aws:3.3.2,io.delta:delta-core_2.12:2.4.0",
         "--conf",
         "spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension",
         "--conf",
@@ -96,15 +94,8 @@ def mock_environment_variables(master: str = None, metastore: bool = False):
     os.environ["PYSPARK_SUBMIT_ARGS"] = pyspark_submit_args
 
 
-def mock_s3_assets():
-    mock_environment_variables()
-    _, _, endpoint_url = mock_endpoint()
-    config.endpoint_url = endpoint_url
-    config.s3_client.create_bucket(Bucket=config.name_bucket_bronze_university)
-    config.s3_client.create_bucket(Bucket=config.name_bucket_raw_university)
-
-
 def mock_spark(
+    config: Config,
     master: str = None,
     app_name: str = "Mock Environment",
     metastore: bool = False,

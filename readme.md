@@ -4,6 +4,10 @@
 
 poetry install -C=library
 
+## Running tests
+
+pytest --config-file library/pyproject.toml
+
 ## Other commands
 
 create a bind mount to the current folder

@@ -14,7 +14,6 @@ pandas = "^2.0.3"
 boto3-stubs = {extras = ["essential"], version = "^1.28.19"}
 delta-spark = "^2.4.0"
 dbt-spark = {extras = ["pyhive"], version = "^1.6.0"}
-pytest-order = "^1.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -22,11 +21,24 @@ black = "^23.7.0"
 isort = "^5.12.0"
 ruff = "^0.0.282"
 pytest = "^7.4.0"
+pytest-order = "^1.1.0"
+pytest-xdist = "^3.3.1"
 moto = {extras = ["s3"], version = "^4.1.14"}
 flask = "^2.3.2"
 flask-cors = "^4.0.0"
 dbt-spark = {extras = ["session"], version = "^1.6.0"}
+pytest-cov = "^4.1.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts =  """
+    --cov=testlib 
+    --cov-report=html:test-docs/report-html
+    --cov-report=xml:test-docs/report.xml
+"""
+testpaths = [
+    "tests"
+]

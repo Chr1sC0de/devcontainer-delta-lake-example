@@ -19,17 +19,9 @@ def cache(obj_method):
 
 
 class Config:
-    _singleton: SparkSession
-
     environment = "dev1"
     endpoint_url = None
     region_name = "us-east-1"
-
-    def __new__(cls):
-        if not hasattr(cls, "_singleton"):
-            obj = super(cls.__class__, cls).__new__(cls)
-            cls._singleton = obj
-        return obj
 
     def set_spark(self, spark_session: SparkSession) -> Self:
         self._spark = spark_session
@@ -82,6 +74,3 @@ class Config:
         return boto3.resource(
             "s3", endpoint_url=self.endpoint_url, region_name=self.region_name
         )
-
-
-config = Config()

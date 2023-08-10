@@ -1,0 +1,11 @@
+.*
+
+!.dockerignore
+!.devcontainer
+!.gitignore
+
+spark-warehouse
+metastore_db
+jars
+
+__pycache__
