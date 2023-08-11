@@ -57,5 +57,5 @@ RUN pyenv global 3.8
 RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes
 RUN echo 'eval "$(starship init bash)"' >> ~/.bashrc
 
-# # now copy the required jars
-# COPY jars/* $SPARK_HOME/jars
+# now copy the required jars
+COPY jars/* $SPARK_HOME/jars
