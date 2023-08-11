@@ -12,10 +12,10 @@
 		"vscode": {
 			"extensions": [
 				"ms-python.python",
-				"ms-python.black-formatter",
 				"ms-python.vscode-pylance",
+				"ms-python.black-formatter",
 				"charliermarsh.ruff",
-				"ms-azuretools.vscode-docker"
+				"ms-azuretools.vscode-docer"
 			],
 			"settings": {
 				"[python]": {

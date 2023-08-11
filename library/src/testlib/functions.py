@@ -52,7 +52,11 @@ def get_active_students(
     )
 
 
-def mock_environment_variables(master: str = None, metastore: bool = False):
+def mock_environment_variables(
+    master: str = None,
+    metastore: bool = False,
+    s3_endpoint: str = "http://127.0.0.1:5000",
+):
     """Mocked AWS Credentials for moto."""
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
@@ -60,7 +64,6 @@ def mock_environment_variables(master: str = None, metastore: bool = False):
     os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
     pyspark_submit_args_list = [
-        # The following packages are only required if the jars have not been downloaded
         "--packages",
         "org.apache.hadoop:hadoop-aws:3.3.2,io.delta:delta-core_2.12:2.4.0",
         "--conf",
@@ -76,7 +79,7 @@ def mock_environment_variables(master: str = None, metastore: bool = False):
         "--conf",
         "spark.hadoop.com.amazonaws.services.s3.enableV4=true",
         "--conf",
-        "spark.hadoop.fs.s3a.endpoint=http://127.0.0.1:5000",
+        f"spark.hadoop.fs.s3a.endpoint={s3_endpoint}",
     ]
 
     if metastore:
@@ -92,17 +95,3 @@ def mock_environment_variables(master: str = None, metastore: bool = False):
     pyspark_submit_args_list.append("pyspark-shell")
     pyspark_submit_args = " ".join(pyspark_submit_args_list)
     os.environ["PYSPARK_SUBMIT_ARGS"] = pyspark_submit_args
-
-
-def mock_spark(
-    config: Config,
-    master: str = None,
-    app_name: str = "Mock Environment",
-    metastore: bool = False,
-) -> SparkSession:
-    mock_environment_variables(master=master, metastore=metastore)
-
-    spark_session = SparkSession.builder.appName(app_name).getOrCreate()
-
-    config.set_spark(spark_session)
-    return spark_session

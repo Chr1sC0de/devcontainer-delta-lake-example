@@ -7,8 +7,6 @@ from testlib.functions import (
 import socket
 import pytest
 
-# from delta import configure_spark_with_delta_pip
-# from delta import *
 from moto import mock_s3
 from moto.server import ThreadedMotoServer
 from pyspark.sql import SparkSession
@@ -30,7 +28,7 @@ def find_open_port() -> int:
 def mocked_server() -> Tuple[str, ThreadedMotoServer]:
     with mock_s3():
         ip_address = "127.0.0.1"
-        port = find_open_port()
+        port = 5000
         endpoint_url = f"http://{ip_address}:{port}"
         server = ThreadedMotoServer(ip_address=ip_address, port=port)
         server.start()

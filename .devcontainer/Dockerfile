@@ -58,4 +58,4 @@ RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes
 RUN echo 'eval "$(starship init bash)"' >> ~/.bashrc
 
 # now copy the required jars
-COPY jars/* $SPARK_HOME/jars
+COPY jars/* ~/.ivy2/jars/
