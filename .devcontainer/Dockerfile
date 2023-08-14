@@ -67,13 +67,21 @@ RUN wget https://dlcdn.apache.org/spark/spark-3.4.1/spark-3.4.1-bin-hadoop3.tgz 
 
 RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes && \
     echo 'eval "$(starship init bash)"' >> ~/.bashrc
-    
-# this is to fix potential compilation issues when installing and compiling 
-# packages on python 3.11 
+
+# this is to fix potential compilation issues when installing and compiling
+# packages on python 3.11
 RUN cp $PYENV_ROOT/versions/3.8.*/include/python3.8/longintrepr.h \
         $PYENV_ROOT/versions/3.11.*/include/python3.11
 
 ENV HOME /root
 
 COPY jars/* /root/.ivy2/jars/
-COPY jars/* /mnt/spark/jars/
+
+WORKDIR /root/.ivy2/jars/
+
+RUN for file in *; do \
+        newname=$(echo "$file" | cut -d'_' -f2-); \
+        if [ "$newname" != "" ]; then \
+            mv "$file" "$newname"; \
+        fi; \
+    done

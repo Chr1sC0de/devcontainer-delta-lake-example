@@ -6,6 +6,6 @@
 
 spark-warehouse
 metastore_db
-jars
+jars*
 
 __pycache__
