@@ -73,4 +73,7 @@ RUN curl -sS https://starship.rs/install.sh | sh -s -- --yes && \
 RUN cp $PYENV_ROOT/versions/3.8.*/include/python3.8/longintrepr.h \
         $PYENV_ROOT/versions/3.11.*/include/python3.11
 
-COPY jars/* ~/.ivy2/jars/
+ENV HOME /root
+
+COPY jars/* /root/.ivy2/jars/
+COPY jars/* /mnt/spark/jars/
